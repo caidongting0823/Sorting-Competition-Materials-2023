@@ -57,15 +57,20 @@ public class Group4 {
     public static void writeOutResult(String[] sorted, String file) {
         try {
             PrintWriter out = new PrintWriter(file);
+            // Calculate the maximum number of digits
+            int maxDigits = Arrays.stream(sorted)
+                                  .mapToInt(String::length)
+                                  .max()
+                                  .orElse(0);
             for (int i = 0; i < sorted.length; i++) {
-                out.println(sorted[i]);
+                out.println(String.format("%0" + maxDigits + "d", Integer.parseInt(sorted[i])));
             }
             out.close();
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(98);
         }
-    }
+    }    
 
 
     // Your sorting algorithm goes here.
@@ -73,29 +78,55 @@ public class Group4 {
     // You may ALSO add methods to the Data Class (or any other class) BUT...
     // DO NOT REMOVE OR CHANGE THIS METHOD'S SIGNATURE OR ITS TYPE
 
-    public static String[] sort(String[] toSort) {
-        List<Integer> primes = sieveOfEratosthenes(1000000); // Assume a large enough limit for now
-        Pair[] pairs = new Pair[toSort.length];
-        for (int i = 0; i < toSort.length; i++) {
-            int num = Integer.parseInt(toSort[i]);
-            int sum = getSumPrimeFactors(num, primes);
-            pairs[i] = new Pair(num, sum);
+    public static String[] sort(String[] data) {
+        int maxNumber = Arrays.stream(data).mapToInt(Integer::parseInt).max().orElse(0);
+        List<Integer> primes = precomputePrimes(maxNumber);
+    
+        int[] numbers = Arrays.stream(data).mapToInt(Integer::parseInt).toArray();
+        Pair[] pairs = new Pair[numbers.length];
+        for (int i = 0; i < numbers.length; i++) {
+            pairs[i] = new Pair(numbers[i], getSumPrimeFactors(numbers[i], primes));
         }
-
-        Arrays.sort(pairs, (p1, p2) -> {
-            if (p1.sum != p2.sum) {
-                return p1.sum - p2.sum;
+    
+        // Updated sorting criteria: Sort in descending order if prime sums are equal
+        Arrays.sort(pairs, (a, b) -> {
+            if (a.sum == b.sum) {
+                return b.number - a.number;
             }
-            return p2.number - p1.number; 
+            return a.sum - b.sum;
         });
-
+    
+        String[] sorted = new String[pairs.length];
         for (int i = 0; i < pairs.length; i++) {
-            toSort[i] = String.format("%04d", pairs[i].number);
+            sorted[i] = String.valueOf(pairs[i].number);
         }
+        return sorted;
+    }    
 
-        return toSort;
+
+    public static List<Integer> precomputePrimes(int limit) {
+        boolean[] isPrime = new boolean[limit + 1];
+        Arrays.fill(isPrime, true);
+        isPrime[0] = false;
+        isPrime[1] = false;
+    
+        for (int i = 2; i <= Math.sqrt(limit); i++) {
+            if (isPrime[i]) {
+                for (int j = i * i; j <= limit; j += i) {
+                    isPrime[j] = false;
+                }
+            }
+        }
+    
+        List<Integer> primes = new ArrayList<>();
+        for (int i = 2; i <= limit; i++) {
+            if (isPrime[i]) {
+                primes.add(i);
+            }
+        }
+        return primes;
     }
-
+    
 
     public static List<Integer> sieveOfEratosthenes(int max) {
         boolean[] isPrime = new boolean[max + 1];
@@ -134,19 +165,25 @@ public class Group4 {
     }
 
 
-    public static int getSumPrimeFactors(int n, List<Integer> primes) {
+    public static int getSumPrimeFactors(int number, List<Integer> primes) {
         int sum = 0;
-        for (int i = 0; i < primes.size() && primes.get(i) <= n; i++) {
-            if (n % primes.get(i) == 0) {
-                sum += primes.get(i);
-                while (n % primes.get(i) == 0) {
-                    n /= primes.get(i);
+        for (int prime : primes) {
+            if (prime > Math.sqrt(number)) {
+                break;
+            }
+            if (number % prime == 0) {
+                sum += prime;  // Adding the prime factor to the sum
+                while (number % prime == 0) {
+                    number /= prime;  // Reducing the number to its next prime factor
                 }
             }
         }
+        if (number > 1) {  // If the remaining number itself is prime
+            sum += number;
+        }
         return sum;
-    }
-
+    }    
+    
 
     static class Pair {
         int number;
