@@ -1,0 +1,99 @@
+Running final2.txt
+
+
+ Group 0: 
+
+730
+
+730
+
+731
+
+Median: 730.0
+Results of diff:
+
+
+ Group 1: 
+
+6260
+
+6266
+
+6263
+
+Median: 6263.0
+Results of diff:
+
+
+ Group 2: 
+
+1
+
+1
+
+1
+
+Median: 1.0
+Results of diff:
+
+
+ Group 3: 
+
+4
+
+4
+
+3
+
+Median: 4.0
+Results of diff:
+
+
+ Group 4: 
+
+6
+
+6
+
+5
+
+Median: 6.0
+Results of diff:
+
+
+ Group 5: 
+
+5
+
+7
+
+5
+
+Median: 5.0
+Results of diff:
+
+Files outRun2Group5.txt and outRun2Group0.txt differ
+
+ Group 6: 
+
+5
+
+4
+
+8
+
+Median: 5.0
+Results of diff:
+
+
+ Group 7: 
+
+1
+
+1
+
+1
+
+Median: 1.0
+Results of diff:
+
